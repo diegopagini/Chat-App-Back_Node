@@ -2,21 +2,21 @@
 
 const { response, request } = require('express');
 
-const createUser = (req = request, res = response) => {
+const createUser = async (req = request, res = response) => {
 	res.json({
 		ok: true,
-		msg: 'controller',
+		msg: 'create user',
 	});
 };
 
-const login = (req = request, res = response) => {
+const login = async (req = request, res = response) => {
 	res.json({
 		ok: true,
 		msg: 'login',
 	});
 };
 
-const renewToken = (req = request, res = response) => {
+const renewToken = async (req = request, res = response) => {
 	res.json({
 		ok: true,
 		msg: 'renewToken',
