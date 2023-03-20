@@ -5,6 +5,7 @@ const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
 const path = require('path');
+const cors = require('cors');
 
 const Sockets = require('./sockets');
 const { dbConnection } = require('../database/config');
@@ -26,6 +27,10 @@ class Server {
 	middlewares() {
 		// Display the public directory:
 		this.app.use(express.static(path.resolve(__dirname, '../public')));
+		// CORS:
+		this.app.use(cors());
+		// Endpoints:
+		this.app.use('/api/login', require('../router/auth'));
 	}
 
 	configurarSockets() {
@@ -35,10 +40,8 @@ class Server {
 	execute() {
 		// Initialize Middlewares:
 		this.middlewares();
-
 		// Initialize sockets:
 		this.configurarSockets();
-
 		// Initialize Server:
 		this.server.listen(this.port, () => {
 			console.log('Server on:', this.port);
