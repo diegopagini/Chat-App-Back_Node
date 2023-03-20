@@ -7,38 +7,39 @@ const socketio = require('socket.io');
 const path = require('path');
 
 const Sockets = require('./sockets');
+const { dbConnection } = require('../database/config');
 
 class Server {
 	constructor() {
 		this.app = express();
 		this.port = process.env.PORT;
-		// Http server
+		// Connect to DB:
+		dbConnection();
+		// Http server:
 		this.server = http.createServer(this.app);
-		// Configuraciones de sockets
+		// Socket configurations:
 		this.io = socketio(this.server, {
-			/* configuraciones */
+			/* configurations */
 		});
 	}
 
 	middlewares() {
-		// Desplegar el directorio público
+		// Display the public directory:
 		this.app.use(express.static(path.resolve(__dirname, '../public')));
 	}
 
-	// Esta configuración se puede tener aquí o como propieda de clase
-	// depende mucho de lo que necesites
 	configurarSockets() {
 		new Sockets(this.io);
 	}
 
 	execute() {
-		// Inicializar Middlewares
+		// Initialize Middlewares:
 		this.middlewares();
 
-		// Inicializar sockets
+		// Initialize sockets:
 		this.configurarSockets();
 
-		// Inicializar Server
+		// Initialize Server:
 		this.server.listen(this.port, () => {
 			console.log('Server corriendo en puerto:', this.port);
 		});
