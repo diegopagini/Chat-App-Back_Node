@@ -2,14 +2,20 @@
 
 const { response, request } = require('express');
 const bcrypt = require('bcryptjs');
-const Usuario = require('../models/user');
+const User = require('../models/user');
 const { generateJWT } = require('../helpers/jwt');
 
+/**
+ *
+ * @param {request} req
+ * @param {response} res
+ * @returns Promise
+ */
 const createUser = async (req = request, res = response) => {
 	try {
 		const { email, password } = req.body;
 		// Check if email already used:
-		const emailExists = await Usuario.findOne({ email });
+		const emailExists = await User.findOne({ email });
 		if (emailExists)
 			return res.status(400).json({
 				ok: false,
@@ -17,7 +23,7 @@ const createUser = async (req = request, res = response) => {
 			});
 
 		// Create user:
-		const user = new Usuario(req.body);
+		const user = new User(req.body);
 
 		// Encrypt password:
 		const salt = bcrypt.genSaltSync();
@@ -36,17 +42,41 @@ const createUser = async (req = request, res = response) => {
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({
-			ok: false,
 			msg: 'Talk to the administrator',
 		});
 	}
 };
 
+/**
+ *
+ * @param {request} req
+ * @param {response} res
+ */
 const login = async (req = request, res = response) => {
 	const { email, password } = req.body;
 
+	try {
+		// Check email:
+		const user = await User.findOne({ email });
+		if (!user)
+			return res.status(404).json({
+				msg: 'Email not found.',
+			});
+
+		// Validate password:
+		const validPassword = bcrypt.compareSync(password, user.password);
+		if (!validPassword)
+			return res.status(400).json({
+				msg: 'Password not valid.',
+			});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			msg: 'Talk to the administrator',
+		});
+	}
+
 	res.json({
-		ok: true,
 		msg: 'login',
 		email,
 		password,
@@ -55,7 +85,6 @@ const login = async (req = request, res = response) => {
 
 const renewToken = async (req = request, res = response) => {
 	res.json({
-		ok: true,
 		msg: 'renewToken',
 	});
 };
