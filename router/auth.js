@@ -1,6 +1,7 @@
 /** @format */
 
 const { Router } = require('express');
+const { check } = require('express-validator');
 const { createUser, login, renewToken } = require('../controllers/auth');
 const router = Router();
 
@@ -14,7 +15,14 @@ router.post('/new', createUser);
  * Login user.
  * @example: localhost:8080/api/login
  */
-router.post('/', login);
+router.post(
+	'/',
+	[
+		check('email', 'Email is required').isEmail(),
+		check('password', 'Password is required').not().isEmpty(),
+	],
+	login
+);
 
 /**
  * Revalidate token.
