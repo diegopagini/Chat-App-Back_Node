@@ -1,7 +1,6 @@
 /** @format */
 
 const { response, request } = require('express');
-const { validationResult } = require('express-validator');
 
 const createUser = async (req = request, res = response) => {
 	res.json({
@@ -11,13 +10,6 @@ const createUser = async (req = request, res = response) => {
 };
 
 const login = async (req = request, res = response) => {
-	const errors = validationResult(req);
-	if (!errors.isEmpty())
-		return res.status(400).json({
-			ok: false,
-			errors: errors.mapped(),
-		});
-
 	const { email, password } = req.body;
 
 	res.json({
