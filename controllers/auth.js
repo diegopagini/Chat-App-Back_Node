@@ -93,8 +93,18 @@ const login = async (req = request, res = response) => {
  * @returns `Promise`
  */
 const renewToken = async (req = request, res = response) => {
-	try {
-	} catch (error) {}
+	const { uid } = req;
+
+	// Generate new JWT.
+	const token = await generateJWT(uid);
+
+	// Get user by uid:
+	const user = await User.findById(uid);
+
+	return res.status(200).json({
+		user,
+		token,
+	});
 };
 
 module.exports = {
