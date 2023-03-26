@@ -9,7 +9,7 @@ const { generateJWT } = require('../helpers/jwt');
  *
  * @param {request} req
  * @param {response} res
- * @returns Promise
+ * @returns `Promise`
  */
 const createUser = async (req = request, res = response) => {
 	try {
@@ -51,6 +51,7 @@ const createUser = async (req = request, res = response) => {
  *
  * @param {request} req
  * @param {response} res
+ * @returns `Promise`
  */
 const login = async (req = request, res = response) => {
 	const { email, password } = req.body;
@@ -69,24 +70,31 @@ const login = async (req = request, res = response) => {
 			return res.status(400).json({
 				msg: 'Password not valid.',
 			});
+
+		// Generate JWT.
+		const token = await generateJWT(user.id);
+
+		return res.status(200).json({
+			user,
+			token,
+		});
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({
 			msg: 'Talk to the administrator',
 		});
 	}
-
-	res.json({
-		msg: 'login',
-		email,
-		password,
-	});
 };
 
+/**
+ *
+ * @param {request} req
+ * @param {response} res
+ * @returns `Promise`
+ */
 const renewToken = async (req = request, res = response) => {
-	res.json({
-		msg: 'renewToken',
-	});
+	try {
+	} catch (error) {}
 };
 
 module.exports = {
