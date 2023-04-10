@@ -16,7 +16,13 @@ const userDisconnected = async (uid) => {
 	return user;
 };
 
+const getUsers = async () => {
+	const users = await User.find().sort('-online');
+	return users;
+};
+
 module.exports = {
+	getUsers,
 	userConnected,
 	userDisconnected,
 };

@@ -1,6 +1,6 @@
 /** @format */
 
-const { userConnected, userDisconnected } = require('../controllers/sockets');
+const { userConnected, userDisconnected, getUsers } = require('../controllers/sockets');
 const { checkJWT } = require('../helpers/jwt');
 
 class Sockets {
@@ -23,9 +23,13 @@ class Sockets {
 
 			await userConnected(uid);
 
+			/** Notify all */
+			this.io.emit('users-list', await getUsers());
+
 			/** disconnect */
 			socket.on('disconnect', async () => {
 				await userDisconnected(uid);
+				this.io.emit('users-list', await getUsers());
 			});
 		});
 	}
