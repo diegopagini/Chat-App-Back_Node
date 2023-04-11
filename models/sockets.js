@@ -1,6 +1,11 @@
 /** @format */
 
-const { userConnected, userDisconnected, getUsers } = require('../controllers/sockets');
+const {
+	userConnected,
+	userDisconnected,
+	getUsers,
+	saveMessage,
+} = require('../controllers/sockets');
 const { checkJWT } = require('../helpers/jwt');
 
 class Sockets {
@@ -23,8 +28,17 @@ class Sockets {
 
 			await userConnected(uid);
 
-			/** Notify all */
+			/** Join a user to a socket io room */
+			socket.join(uid);
+
+			/** Notify all the users list */
 			this.io.emit('users-list', await getUsers());
+
+			/** Personal message */
+			socket.on('personal-message', async (payload) => {
+				const message = await saveMessage(payload);
+				this.io.to(payload.to).emit('personal-message', message);
+			});
 
 			/** disconnect */
 			socket.on('disconnect', async () => {
